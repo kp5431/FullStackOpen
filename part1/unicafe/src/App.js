@@ -7,6 +7,8 @@ const App = () => {
   const [bad, setBad] = useState(0)
 
 
+
+
   const handleGoodClick = () => {
     setGood(good + 1)
   }
@@ -29,6 +31,9 @@ const App = () => {
       <Feedback text = "good" num = {good}/>
       <Feedback text = "neutral" num = {neutral}/>
       <Feedback text = "bad" num = {bad}/>
+      <Feedback text = "all" num = {good + neutral + bad}/>
+      <Feedback text = "average" num = {(good - bad) / (good + bad + neutral)}/>
+      <Feedback text = "positive" num = {((good) / (good + bad + neutral)) * 100}/>
     </div>
   )
 }
@@ -51,6 +56,7 @@ const Header = ({text}) => {
 }
 
 const Feedback = ({text, num}) => {
+
   return(
     <div>
       {text} {num}
