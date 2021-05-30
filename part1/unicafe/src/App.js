@@ -31,6 +31,14 @@ const App = () => {
 }
 
 const Statistics = ({good, neutral, bad}) => {
+  if (good + neutral + bad == 0){
+    return (
+      <div>
+        <Header text = "statistics"/>
+        <p> No feedback given </p>
+      </div>
+    )
+  }
   return (
     <div>
       <Header text = "statistics"/>
@@ -39,7 +47,7 @@ const Statistics = ({good, neutral, bad}) => {
       <Feedback text = "bad" num = {bad}/>
       <Feedback text = "all" num = {good + neutral + bad}/>
       <Feedback text = "average" num = {(good - bad) / (good + bad + neutral)}/>
-      <Feedback text = "positive" num = {((good) / (good + bad + neutral)) * 100}/>
+      <Feedback text = "positive" num = {((good) / (good + bad + neutral)) * 100} displayPercent = {1}/>
     </div>
   )
 }
@@ -61,8 +69,14 @@ const Header = ({text}) => {
   )
 }
 
-const Feedback = ({text, num}) => {
-
+const Feedback = ({text, num, displayPercent}) => {
+  if(displayPercent){
+    return(
+      <div>
+        {text} {num} %
+      </div>
+    )  
+  }
   return(
     <div>
       {text} {num}
