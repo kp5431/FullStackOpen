@@ -10,6 +10,8 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
   ]
 
+  const [maxIndex, setMaxIndex] = useState(0) //sets maxIndex up as a state variable initialized to 0
+
   const [selected, setSelected] = useState(0) //sets selected up as a state variable initialized to 0
   const getRandomInt = () => Math.floor(Math.random() * anecdotes.length) //returns a random integer within range 0 to length of anecdotes - 1
   const handleAnecdote = () => setSelected(getRandomInt()) //function describes what to do when anecdote button is clicked. It sets selected to the random num
@@ -19,10 +21,25 @@ const App = () => {
     const copy = [...votes] //create an identical copy of votes
     copy[selected] += 1 //increase val by 1 at selected index
     setVotes(copy) //sets votes to the new copy array. Can't mutate a datastructure when it's part of a React component's state.
+    
+    //below finds index for largest num of votes
+    let currMax = 0 
+    let lMaxIndex = 0 
+    let i = 0
+    for (i = 0; i < copy.length; i++){
+      if(copy[i] > currMax){
+        currMax = copy[i]
+        lMaxIndex = i
+      }
+    }
+    setMaxIndex(lMaxIndex)
   }
+
+
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>
         {anecdotes[selected]} <br></br>
         has {votes[selected]} votes
@@ -30,6 +47,11 @@ const App = () => {
       <p>
         <Button handleClick = {handleVote} text = "vote"/>
         <Button handleClick = {handleAnecdote} text = "next anecdote"/>
+      </p>
+      <h1>Anecdote with the most votes</h1>
+      <p>
+        {anecdotes[maxIndex]} <br></br>
+        has {votes[maxIndex]} votes
       </p>
     </div>
   )
