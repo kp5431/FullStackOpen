@@ -39,15 +39,40 @@ const Statistics = ({good, neutral, bad}) => {
       </div>
     )
   }
+  const all = good + bad + neutral
+  const average = (good - bad) / (good + bad + neutral)
+  const positive = ((good) / (good + bad + neutral)) * 100
   return (
     <div>
       <Header text = "statistics"/>
-      <Statistic text = "good" num = {good} displayPercent = {0}/>
-      <Statistic text = "neutral" num = {neutral} displayPercent = {0}/>
-      <Statistic text = "bad" num = {bad} displayPercent = {0}/>
-      <Statistic text = "all" num = {good + neutral + bad} displayPercent = {0}/>
-      <Statistic text = "average" num = {(good - bad) / (good + bad + neutral)} displayPercent = {0}/>
-      <Statistic text = "positive" num = {((good) / (good + bad + neutral)) * 100} displayPercent = {1}/>
+      <table>
+        <tbody>
+          <tr>
+            <td>good</td>
+            <td>{good}</td>  
+          </tr>
+          <tr>
+            <td>neutral</td>
+            <td>{neutral}</td>  
+          </tr>
+          <tr>
+            <td>bad</td>
+            <td>{bad}</td>  
+          </tr>
+          <tr>
+            <td>all</td>
+            <td>{all}</td>  
+          </tr>
+          <tr>
+            <td>average</td>
+            <td>{average}</td>  
+          </tr>
+          <tr>
+            <td>positive</td>
+            <td>{positive} %</td>  
+          </tr>
+        </tbody>
+      </table>
     </div>
   )
 }
@@ -65,21 +90,6 @@ const Header = ({text}) => {
   return(
     <div>
       <h1>{text}</h1>
-    </div>
-  )
-}
-
-const Statistic = ({text, num, displayPercent}) => {
-  if(displayPercent){
-    return(
-      <div>
-        {text} {num} %
-      </div>
-    )  
-  }
-  return(
-    <div>
-      {text} {num}
     </div>
   )
 }
