@@ -1,19 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const Header = ({ course }) => {
+const Header = ({name}) => {
   return (
-    <h1>{course.name}</h1>
+    <h1>{name}</h1>
   )
 }
-/*
-const Total = ({ course }) => {
-  const sum = course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises
+
+const Total = ({array}) => {
+  let sum = 0
+  for(let i = 0; i < array.length; i++){
+    sum += array[i].exercises
+  }
   return(
-    <p>Number of exercises {sum}</p>
+    <h3>Number of exercises {sum}</h3>
   ) 
 }
-
+/*
 const Part = ({name, exercises}) => {
   return (
     <li>
@@ -22,12 +25,11 @@ const Part = ({name, exercises}) => {
   )
 }
 */
-const Content = ({ course }) => {
-  const lparts = course.parts
+const Content = ({parts}) => {
   return (
     <div>
       <ul>
-        {lparts.map(part =>
+        {parts.map(part =>
           <li key={part.id}> 
             {part.name} {part.exercises}
           </li>
@@ -40,8 +42,9 @@ const Content = ({ course }) => {
 const Course = ({course}) => {
   return (
     <div>
-      <Header course = {course}/>
-      <Content course = {course} />
+      <Header name={course.name}/>
+      <Content parts={course.parts} />
+      <Total array={course.parts} />
     </div>
   )
 }
@@ -65,6 +68,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }
