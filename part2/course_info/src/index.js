@@ -8,10 +8,17 @@ const Header = ({name}) => {
 }
 
 const Total = ({array}) => {
-  let sum = 0
-  for(let i = 0; i < array.length; i++){
-    sum += array[i].exercises
-  }
+  //how this works:
+  //iter 1: a = 0, c = 10
+  //iter 2: a = 10, c = 7
+  //iter 3: a = 17, c = 14
+  //iter 4: a = 31, c = 11
+  //iter 5: a = 42
+  //accum is an integer every time, but have to hardcode the initial '0' val in as second arg.
+  //then add obj.exercises each iter (currVal.exercises)
+  const sum = array.reduce((accum, currVal) => {
+    return accum + currVal.exercises
+  }, 0)
   return(
     <h3>Number of exercises {sum}</h3>
   ) 
