@@ -22,15 +22,24 @@ const App = () => {
 
   /*
   This function is called when the button is clicked.
-  It adds a new person to the person state variable (list),
-  and also resets the text in the form
+  It adds a new person to the person state variable (list)
+  if their name is not already added, then resets the text
+  in the form
   */
   const addPerson = (buttonClicked) => {
     buttonClicked.preventDefault() //prevent default form action
-    const personObject = { //create a new person object to add
-      name: newName
+    if(!newName.length){
+      window.alert("Please don't enter an empty string")
     }
-    setPersons(persons.concat(personObject)) //must always create new collections/things in react
+    else if(!persons.some(person => person.name === newName)){
+      const personObject = { //create a new person object to add
+        name: newName
+      }
+      setPersons(persons.concat(personObject)) //must always create new collections/things in react
+    }
+    else{
+      window.alert(`${newName} is already added to phonebook`)
+    }
     setNewName('') //reset the text in the form box to blank
   }
 
