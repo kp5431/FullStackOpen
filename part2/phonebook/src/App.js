@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
+import Person from './Person.js'
+import PersonForm from './PersonForm.js'
+import FilterForm from './FilterForm.js'
 
-const Person = ({content}) => {
-  return (
-    <li>{content.name} {content.number}</li>
-  )
-}
-
+/*
+* React Phonebook application. Uses state to add new people to phonebook
+* and search for people based on name
+*/
 
 const App = () => {
   /*
@@ -37,7 +38,7 @@ const App = () => {
   const [searchStr, setSearchStr] = useState('')
 
   /*
-  This function is called when the button is clicked.
+  This event handler is called when the button is clicked.
   It adds a new person to the person state variable (list)
   if their name is not already added, then resets the text
   in the form. Also adds number
@@ -62,7 +63,7 @@ const App = () => {
   }
 
   /*
-  This function is called each time a char is added in the name textbox.
+  This event handler is called each time a char is added in the name textbox.
   It sets the state variable newName to whatever is currently in the
   textbox.
   */
@@ -71,7 +72,7 @@ const App = () => {
   }
 
   /*
-  This function is called each time a char is added in the num textbox.
+  This event handler is called each time a char is added in the num textbox.
   It sets the state variable newNum to whatever is currently in the
   textbox.
   */
@@ -80,7 +81,7 @@ const App = () => {
   }
 
   /*
-  This function is called each time a char is added in the search textbox.
+  This event handler is called each time a char is added in the search textbox.
   It sets the state variable searchStr to whatever is currently in the 
   textbox.
   */
@@ -88,50 +89,31 @@ const App = () => {
     setSearchStr(event.target.value)
   }
 
+  /*
+  this var is updated each time theres a state change. It filters the people to show
+  if the searchStr is not empty
+  */
   const peopleToShow = searchStr.length
     ? persons.filter(person => person.name.toLowerCase().includes(searchStr.toLowerCase()))
     : persons
+
   return (
     <div>
       <h2>Phonebook</h2>
       <form>
-        show names only containing <input 
-          value={searchStr}
-          onChange={handleSearchChange}
-        />
-        
+        show names only containing: 
+          <FilterForm str={searchStr} handler={handleSearchChange} /> {/*Form lets you input a string to filter people*/}
       </form>
       <h2>Add a new</h2>
-      <form onSubmit={addBoth}>
-        <div>
-          <ul>
-            <li>
-              name: <input
-              value={newName}
-              onChange={handlePersonChange} //each time a char is added to textbox onChange is called
-              />
-            </li>
-            <li>
-              number: <input
-                value={newNum}
-                onChange={handleNumChange} //each time a char is added to textbox onChange is called
-              />
-            </li>
-          </ul>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+        <PersonForm formHandler={addBoth} perChange={handlePersonChange} 
+          numChange={handleNumChange} nameState={newName} numState={newNum}/> {/*Form for adding a new person with their phone number*/} 
       <h2>Numbers</h2>
       <ul>
         {peopleToShow.map(person =>
-          <Person key={person.name} content={person}/>
-          )}
+          <Person key={person.name} content={person}/> 
+          )} {/* generate a list of people in the html of the page */}
       </ul>
-      <div>debug: {newName}</div>
     </div>
-    
   )
 }
 
