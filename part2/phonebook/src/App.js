@@ -12,8 +12,10 @@ const App = () => {
   This piece of state contains the array of person objects
   */
   const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas',
-      number: '040-1234567' }
+    { name: 'Arto Hellas', number: '040-123456' },
+    { name: 'Ada Lovelace', number: '39-44-5323523' },
+    { name: 'Dan Abramov', number: '12-43-234345' },
+    { name: 'Mary Poppendieck', number: '39-23-6423122' }
   ])
 
   /*
@@ -27,6 +29,12 @@ const App = () => {
   Default is no text
   */
   const [newNum, setNewNum] = useState('')
+
+  /*
+  This piece of state contains the current text in the search box
+  Default is no text
+  */
+  const [searchStr, setSearchStr] = useState('')
 
   /*
   This function is called when the button is clicked.
@@ -64,16 +72,36 @@ const App = () => {
 
   /*
   This function is called each time a char is added in the num textbox.
-  It sets the state variable newName to whatever is currently in the
+  It sets the state variable newNum to whatever is currently in the
   textbox.
   */
   const handleNumChange = (event) => {
     setNewNum(event.target.value)
   }
 
+  /*
+  This function is called each time a char is added in the search textbox.
+  It sets the state variable searchStr to whatever is currently in the 
+  textbox.
+  */
+  const handleSearchChange = (event) => {
+    setSearchStr(event.target.value)
+  }
+
+  const peopleToShow = searchStr.length
+    ? persons.filter(person => person.name.toLowerCase().includes(searchStr.toLowerCase()))
+    : persons
   return (
     <div>
       <h2>Phonebook</h2>
+      <form>
+        show names only containing <input 
+          value={searchStr}
+          onChange={handleSearchChange}
+        />
+        
+      </form>
+      <h2>Add a new</h2>
       <form onSubmit={addBoth}>
         <div>
           <ul>
@@ -97,7 +125,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        {persons.map(person =>
+        {peopleToShow.map(person =>
           <Person key={person.name} content={person}/>
           )}
       </ul>
