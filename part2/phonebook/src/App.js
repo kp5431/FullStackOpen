@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Person from './Person.js'
 import PersonForm from './PersonForm.js'
 import FilterForm from './FilterForm.js'
@@ -12,12 +13,7 @@ const App = () => {
   /*
   This piece of state contains the array of person objects
   */
-  const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [ persons, setPersons ] = useState([])
 
   /*
   This piece of state contains the current text in the name box
@@ -36,6 +32,19 @@ const App = () => {
   Default is no text
   */
   const [searchStr, setSearchStr] = useState('')
+
+  /*
+  This effect is run once, after the first render, because the second arg is an empty list
+  Its purpose is to fetch the initial state of the phonebook's data. This data is stored
+  in a db.json file locally. Using json-server to make the database server implementation
+  */
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(resp => {
+        setPersons(resp.data)
+      })
+  }, [])
 
   /*
   This event handler is called when the button is clicked.
