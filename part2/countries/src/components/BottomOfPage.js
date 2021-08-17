@@ -1,44 +1,43 @@
-import SimpleBullet from "./SimpleBullet"
-const BottomOfPage = ({countries, searchStr}) => {
-    if (searchStr.length && countries.length){
+/***
+ * This component returns 4 different views.
+ * 1. No countries found
+ * 2. > 10 countries found
+ * 3. 1 country found (detailed view)
+ * 4. [2 -> 10] countries found (bulleted view with expand buttons)
+ ***/
+import ComplexBullet from "./ComplexBullet"
+import CountryView from "./CountryView"
+const BottomOfPage = ({countries, searchStr, buttonHandler, detailedCountries}) => {
+
+    if (searchStr.length && countries.length){ //ensure there's a search string and country data
         const countriesToShow = countries.filter(country => country.name.toLowerCase().includes(searchStr.toLowerCase()))
-        if(countriesToShow.length < 11 && countriesToShow.length > 1){ //if there are 2-10 countries, show only their name
+        if(countriesToShow.length < 11 && countriesToShow.length > 1){ //view 4
             return (
                 <div>
                     <ul>
-                        {countriesToShow.map(country =>
-                           <SimpleBullet key={country.name} name={country.name}/>
+                        {countriesToShow.map(country => //return countriesToShow.length - 1 ComplexBullets
+                           <ComplexBullet key={country.name} singleCountry={country} handler={buttonHandler} 
+                             detailedCountries={detailedCountries}/>
                         )}
                     </ul>
                 </div>
             )
         }
-        else if(countriesToShow.length > 10){
+        else if(countriesToShow.length > 10){ //view 2
             return (
                 <div>
-                    Too many matches, specify a more specific filter
+                    <p>Too many matches, specify a more specific filter</p>
                 </div>
             )
         }
-        else if(countriesToShow.length === 1) {
-            const country = countriesToShow[0]
+        else if(countriesToShow.length === 1) { //view 3
+            const singleCountry = countriesToShow[0]
             return (
-                <div>
-                    <h1>{country.name}</h1>
-                    <p>capital {country.capital}</p>
-                    <p>population {country.population}</p>
-                    <h2>languages</h2>
-                    <ul>
-                        {country.languages.map(lang =>
-                            <SimpleBullet key={lang.name} name={lang.name}/>
-                        )}
-                    </ul>
-                    <img src={country.flag} alt={'Flag of ' + country.name} width="100" height="100"/>
-                </div>
+                <CountryView country={singleCountry} /> //this is the detailed view of the country
             )
         }
     }
-    return (
+    return ( //view 1
         <div>
             <p>No countries found with this search criteria.</p>
         </div>
