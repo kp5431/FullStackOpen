@@ -57,12 +57,22 @@ const App = () => {
     if(!newName.length || !newNum.length){
       window.alert("Please don't enter an empty string")
     }
-    else if(!persons.some(person => person.name === newName)){
-      const personObject = { //create a new person object to add
-        name: newName,
-        number: newNum
-      }
-      //send the new person object to the server
+    const personObject = { //create a new person object to add
+      name: newName,
+      number: newNum
+    }
+    if(persons.some(person => person.name === newName)){ //person already exists in server
+      if(window.confirm(`${newName} is already added to phonebook, would you like to replace their number?`)){
+        personService
+        .update(persons.find(person => person.name === newName).id, personObject) //get the id of the person object to be changed from the database
+        .then(returnedPerson => { //here we update our local frontend state
+          setPersons(persons.map(person => { 
+            person.name === newName ? returnedPerson : person} //keep the old versions of people unless it's the one we just changed, so use the new version in local state
+            ))
+        })
+      }      
+    }
+    else{//send the new person object to the server
       personService
       .create(personObject)
       .then(returnedPerson => {
@@ -70,10 +80,6 @@ const App = () => {
         setNewName('')
         setNewNum('')
       })
-      
-    }
-    else{
-      window.alert(`${newName} is already added to phonebook`)
     }
     setNewName('') //reset the text in the form box to blank
     setNewNum('')
@@ -145,7 +151,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {peopleToShow.map(person =>
-          <Person key={person.name} content={person} clickHandler={() => handleDeletion(person.id)}/> 
+          <Person key={person.name} content={person} clickHandler={() => handleDeletion(person.id)}/>  //generate a specific handler for each button
           )} {/* generate a list of people in the html of the page */}
       </ul>
     </div>
