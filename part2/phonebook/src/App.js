@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Person from './Person.js'
 import PersonForm from './PersonForm.js'
 import FilterForm from './FilterForm.js'
+import personService from "./services/persons"
 
 /*
 * React Phonebook application. Uses state to add new people to phonebook
@@ -39,11 +39,11 @@ const App = () => {
   in a db.json file locally. Using json-server to make the database server implementation
   */
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(resp => {
-        setPersons(resp.data)
-      })
+    personService
+    .getAll()
+    .then(initialPersons => {
+      setPersons(initialPersons)
+    })
   }, [])
 
   /*
@@ -63,10 +63,12 @@ const App = () => {
         number: newNum
       }
       //send the new person object to the server
-      axios
-      .post('http://localhost:3001/persons', personObject)
-      .then(resp => {
-        setPersons(persons.concat(resp.data)) //must always create new collections/things in react
+      personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson)) //have to add the new person to our local state
+        setNewName('')
+        setNewNum('')
       })
       
     }
