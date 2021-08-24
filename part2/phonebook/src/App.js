@@ -62,7 +62,13 @@ const App = () => {
         name: newName,
         number: newNum
       }
-      setPersons(persons.concat(personObject)) //must always create new collections/things in react
+      //send the new person object to the server
+      axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(resp => {
+        setPersons(persons.concat(resp.data)) //must always create new collections/things in react
+      })
+      
     }
     else{
       window.alert(`${newName} is already added to phonebook`)
