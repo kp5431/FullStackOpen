@@ -114,6 +114,24 @@ const App = () => {
     ? persons.filter(person => person.name.toLowerCase().includes(searchStr.toLowerCase()))
     : persons
 
+  /*
+  this function tells the backend to remove
+  a person object
+  */
+  const handleDeletion = (id) => {
+    const personToDelete = persons.find(person => person.id === id)
+    if(window.confirm(`Are you sure you want to remove ${personToDelete.name}?`)){
+      personService
+      .del(id).then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+      .catch(error => {
+        alert(`the person '${personToDelete.name} was already removed from the server'`)
+        console.log(error)
+      })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -127,7 +145,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {peopleToShow.map(person =>
-          <Person key={person.name} content={person}/> 
+          <Person key={person.name} content={person} clickHandler={() => handleDeletion(person.id)}/> 
           )} {/* generate a list of people in the html of the page */}
       </ul>
     </div>

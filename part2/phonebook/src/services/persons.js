@@ -30,10 +30,20 @@ const update = (id, newPersonVersion) => {
     return request.then(resp => resp.data)
 }
 
+/*
+This function deletes a person object
+out of the database
+*/
+const del = (id) => {
+    const request = axios.delete(`${baseUrl}/${id}`)
+    return request.then(resp => resp.data)
+}
+
 const personService = {
     getAll,
     create,
-    update
+    update,
+    del
 }
 
 export default personService
