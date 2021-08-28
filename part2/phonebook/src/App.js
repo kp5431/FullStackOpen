@@ -77,7 +77,14 @@ const App = () => {
             return person.name === newName ? returnedPerson : person //keep the old versions of people unless it's the one we just changed, so use the new version in local state
           })) //note the return in the above line. fails to compile without it
         })
-        //update the operation notification text for 5 sec
+        .catch(error => { //handler for rare case that person is removed while attempting to update
+          setPersons(persons.filter(person => person.name !== newName)) //remove the local cached version of the person
+          setOpText(`Error: The person ${newName} has already been removed from the server, cannot change their number.`)
+          setTimeout(() => {
+            setOpText(null)
+          }, 5000)
+        })
+        //update the operation notification text for 5 sec for successful update number change
         setOpText(`${newName}'s number is now set to ${newNum}`)
         setTimeout(() => {
           setOpText(null)
