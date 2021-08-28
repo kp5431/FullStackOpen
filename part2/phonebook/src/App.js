@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import Person from './Person.js'
-import PersonForm from './PersonForm.js'
-import FilterForm from './FilterForm.js'
+import Person from './components/Person.js'
+import PersonForm from './components/PersonForm.js'
+import FilterForm from './components/FilterForm.js'
 import personService from "./services/persons"
+import OpNote from './components/OpNote.js'
 
 /*
 * React Phonebook application. Uses state to add new people to phonebook
@@ -32,6 +33,12 @@ const App = () => {
   Default is no text
   */
   const [searchStr, setSearchStr] = useState('')
+
+  /*
+  This piece of state contains the text currently displayed in the
+  operation notification component
+  */
+  const [opText, setOpText] = useState(null)
 
   /*
   This effect is run once, after the first render, because the second arg is an empty list
@@ -67,9 +74,14 @@ const App = () => {
         .update(persons.find(person => person.name === newName).id, personObject) //get the id of the person object to be changed from the database
         .then(returnedPerson => { //here we update our local frontend state
           setPersons(persons.map(person => { 
-            person.name === newName ? returnedPerson : person} //keep the old versions of people unless it's the one we just changed, so use the new version in local state
-            ))
+            return person.name === newName ? returnedPerson : person //keep the old versions of people unless it's the one we just changed, so use the new version in local state
+          })) //note the return in the above line. fails to compile without it
         })
+        //update the operation notification text for 5 sec
+        setOpText(`${newName}'s number is now set to ${newNum}`)
+        setTimeout(() => {
+          setOpText(null)
+        }, 5000)
       }      
     }
     else{//send the new person object to the server
@@ -80,6 +92,11 @@ const App = () => {
         setNewName('')
         setNewNum('')
       })
+      //update the operation notification text for 5 sec
+      setOpText(`${newName} added to the phonebook!`)
+      setTimeout(() => {
+        setOpText(null)
+      }, 5000)
     }
     setNewName('') //reset the text in the form box to blank
     setNewNum('')
@@ -140,6 +157,7 @@ const App = () => {
 
   return (
     <div>
+      <OpNote msg={opText}/>
       <h2>Phonebook</h2>
       <form>
         show names only containing: 
