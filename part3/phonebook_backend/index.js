@@ -24,13 +24,21 @@ let persons = [
     }
 ]
 
+//morgan custom token for POST handling
+morgan.token("POST", (req, resp) => {
+    if(req.method === 'POST'){
+        return JSON.stringify(req.body)
+    }
+    return ""
+})
+
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
     
 const app = express()
 app.use(express.json())
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :POST'))
 
 app.get('/api/persons', (request, response) => {
     response.json(persons)
@@ -55,7 +63,7 @@ app.get('/api/persons/:id', (req, resp) => {
     }
 })
 
-app.delete('/api/persons/', (request, response) => {
+app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
