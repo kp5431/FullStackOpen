@@ -1,5 +1,5 @@
-const { response } = require('express')
 const express = require('express')
+const morgan = require('morgan') //middleware
 
 let persons = [
     { 
@@ -23,9 +23,14 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+    
 const app = express()
 app.use(express.json())
-
+app.use(morgan('tiny'))
 
 app.get('/api/persons', (request, response) => {
     response.json(persons)
@@ -66,14 +71,19 @@ app.post('/api/persons', (request, response) => {
     }
     else{
         const newPerson = {
+            id: Math.random(0, 999),
             name: body.name,
-            number: body.number,
-            id: Math.random(0, 999)
+            number: body.number
+            
         }
         persons = persons.concat(newPerson)
         response.json(newPerson)
     }
 })
+
+app.use(unknownEndpoint) //instead of setting this up before the routes,
+                         //this acts as a handler for unknown routes
+
 
 const PORT = 3001
 app.listen(PORT)

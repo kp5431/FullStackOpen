@@ -21,6 +21,14 @@ let notes = [
     }
   ]
 
+const requestLogger = (request, response, next) => { //middleware
+console.log('Method:', request.method)
+console.log('Path:  ', request.path)
+console.log('Body:  ', request.body)
+console.log('---')
+next()
+}
+
 const genId = () => {
     const maxId = notes.length > 0 
     ? Math.max(...notes.map(n => n.id)) //three dot spread syntax converts the array into individual numbers
@@ -29,6 +37,7 @@ const genId = () => {
 }
 const app = express()
 app.use(express.json())
+app.use(requestLogger)
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
