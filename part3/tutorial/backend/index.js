@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors') //use cors to get past same origin policy
 
 let notes = [
     {
@@ -36,6 +37,7 @@ const genId = () => {
     return maxId + 1
 }
 const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(requestLogger)
 
@@ -64,6 +66,15 @@ app.delete('/api/notes/:id', (request, response) => {
     response.status(204).end()
 })
 
+app.put('/api/notes/:id', (req, resp) => {
+    if(!req.body.content){
+        return resp.status(400).json({error: 'content missing'}) //400 bad request
+    }
+    const id = Number(req.params.id)
+    notes = notes.map(note => note.id === id ? req.body : note)
+    resp.json(req.body)
+})
+
 app.post('/api/notes', (request, response) => {
     
     const body = request.body //body property would be undefined without json-parser
@@ -84,6 +95,5 @@ app.post('/api/notes', (request, response) => {
 })
 
 
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
+const PORT = process.env.port || 3001
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
