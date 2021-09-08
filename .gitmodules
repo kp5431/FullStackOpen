@@ -1,0 +1,3 @@
+[submodule "part3/phonebook/fullstack"]
+	path = part3/phonebook/fullstack
+	url = https://git.heroku.com/phonebook-exercise-3-10.git

@@ -4,7 +4,7 @@ with the backend server
 */
 
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/api/persons'
+const baseUrl = '/api/persons'
 
 /*
 This function returns all of the people objects in the database
