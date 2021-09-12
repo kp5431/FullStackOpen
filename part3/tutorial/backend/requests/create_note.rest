@@ -2,6 +2,6 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-    "content": "vscode rest extesion",
+    "content": "vscode rest extesion 4",
     "important": false
 }
