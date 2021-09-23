@@ -71,7 +71,7 @@ const App = () => {
     if(persons.some(person => person.name === newName)){ //person already exists in server
       if(window.confirm(`${newName} is already added to phonebook, would you like to replace their number?`)){
         personService
-        .update(persons.find(person => person.name === newName)._id, personObject) //get the id of the person object to be changed from the database
+        .update(persons.find(person => person.name === newName).id, personObject) //get the id of the person object to be changed from the database
         .then(returnedPerson => { //here we update our local frontend state
           setPersons(persons.map(person => { 
             return person.name === newName ? returnedPerson : person //keep the old versions of people unless it's the one we just changed, so use the new version in local state
@@ -150,11 +150,11 @@ const App = () => {
   a person object
   */
   const handleDeletion = (id) => {
-    const personToDelete = persons.find(person => person._id === id)
+    const personToDelete = persons.find(person => person.id === id)
     if(window.confirm(`Are you sure you want to remove ${personToDelete.name}?`)){
       personService
       .del(id).then(() => {
-        setPersons(persons.filter(person => person._id !== id))
+        setPersons(persons.filter(person => person.id !== id))
       })
       .catch(error => {
         alert(`the person '${personToDelete.name} was already removed from the server'`)
@@ -177,7 +177,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {peopleToShow.map(person =>
-          <Person key={person.name} content={person} clickHandler={() => handleDeletion(person._id)}/>  //generate a specific handler for each button
+          <Person key={person.name} content={person} clickHandler={() => handleDeletion(person.id)}/>  //generate a specific handler for each button
           )} {/* generate a list of people in the html of the page */}
       </ul>
     </div>

@@ -39,9 +39,12 @@ next()
 const errorHandler = (error, request, response, next) => { 
     console.error(error.message)
   
-    if (error.name === 'CastError') {
+    if(error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
     } 
+    else if(error. name === 'ValidationError'){
+        return response.status(400).json({error: error.message})
+    }
   
     next(error)
 }
@@ -121,9 +124,10 @@ app.post('/api/notes', (request, response) => {
 
     note.save()
     .then(savedNote => {
-        response.json(savedNote)
+        return savedNote.toJSON()
     })
-    .catch(err => response.status(400).json(`Error: ${err}`))
+    .then(formattedNote => response.json(formattedNote))
+    .catch(err => next(error)) //pass to errorhandler
 })
 
 app.use(unknownEndpoint)
