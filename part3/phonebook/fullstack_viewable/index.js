@@ -85,6 +85,22 @@ app.post('/api/persons', (request, response) => {
     .catch(err => response.status(400).json(`Error: ${err}`))
 })
 
+app.put('/api/persons/:id', (request, response) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    .then(updatedPerson => {
+        response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
+
+
 app.use(unknownEndpoint) //instead of setting this up before the routes,
                          //this acts as a handler for unknown routes
 app.use(errorHandler)
