@@ -13,9 +13,20 @@ morgan.token("POST", (req, resp) => {
     return ""
 })
 
+
+const errorHandler = (error, request, response, next) => { 
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+    next(error)
+}
+
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
+
     
 const app = express()
 app.use(cors())
@@ -37,8 +48,8 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
     Person.find({})
-    .then(result => {
-        response.json(result)
+    .then(persons => {
+        response.json(persons)
     })
 })
 
@@ -51,9 +62,11 @@ app.get('/api/persons/:id', (req, resp) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+    Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+        response.status(204).end()
+    })
+    .catch(error => next(error)) //send the error to be handled in the next middleware
 })
 
 app.post('/api/persons', (request, response) => {
@@ -74,6 +87,7 @@ app.post('/api/persons', (request, response) => {
 
 app.use(unknownEndpoint) //instead of setting this up before the routes,
                          //this acts as a handler for unknown routes
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT || 5001

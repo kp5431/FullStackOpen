@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && cd C:/Users/kp543/Desktop/school/fullstackopen/part3/phonebook/frontend && npm run build --prod && cp -r build C:/Users/kp543/Desktop/school/fullstackopen/part3/phonebook/backend_and_frontend_prod"
+    "build:ui": "rm -rf build && cd C:/Users/kp543/Desktop/school/fullstackopen/part3/phonebook/frontend && npm run build --prod && cp -r build C:/Users/kp543/Desktop/school/fullstackopen/part3/phonebook/fullstack",
+    "copy" : "cd C:/Users/kp543/Desktop/school/fullstackopen/part3/phonebook && rm -rf fullstack_viewable && cp -r fullstack C:/Users/kp543/Desktop/school/fullstackopen/part3/phonebook/fullstack_viewable"
   },
   "author": "kade",
   "license": "ISC",
@@ -15,7 +16,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^6.0.5",
+    "mongoose": "^6.0.7",
     "morgan": "^1.10.0",
     "static": "^2.0.0"
   },

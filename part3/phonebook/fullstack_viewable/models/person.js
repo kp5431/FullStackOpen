@@ -13,7 +13,7 @@ mongoose.connect(url)
 //define the schema for a person (schema: how the data is structured)
 const personSchema = new mongoose.Schema({
     name: String,
-    number: String
+    number: String,
 })
 personSchema.set('toJson', { //the server cleans up the data it forwards to the frontend
     transform: (document, returnedObject) => {
