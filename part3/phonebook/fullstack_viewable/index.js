@@ -39,11 +39,14 @@ app.use(express.static('build'))
 */
 
 app.get('/info', (request, response) => {
-    response.send(
-    `<div>
-        <p>Phonebook has info for ${persons.length} people</p>
-        <p>${Date()}</p>
-    </div`)
+    Person.countDocuments((error, count) => {
+        response.send(
+            `<div>
+                <p>Phonebook has info for ${count} people</p>
+                <p>${Date()}</p>
+            </div`)
+    })
+    
 })
 
 app.get('/api/persons', (request, response) => {
@@ -53,7 +56,7 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (req, resp) => {
+app.get('/api/persons/:id', (request, response) => {
     Person.findById(request.params.id)
     .then(person => {
         response.json(person)
