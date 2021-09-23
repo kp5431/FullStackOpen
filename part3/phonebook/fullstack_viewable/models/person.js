@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator') //only unique vals marked as unique allowed in db
 const url = process.env.MONGODB_URI
 console.log('connecting to', url)
 
@@ -12,10 +13,19 @@ mongoose.connect(url)
 
 //define the schema for a person (schema: how the data is structured)
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    number: {
+        type: String,
+        required: true
+    }
 })
-personSchema.set('toJson', { //the server cleans up the data it forwards to the frontend
+personSchema.plugin(uniqueValidator); //apply
+
+personSchema.set('toJSON', { //the server cleans up the data it forwards to the frontend
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
         delete returnedObject._id

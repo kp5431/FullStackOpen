@@ -127,7 +127,7 @@ app.post('/api/notes', (request, response) => {
         return savedNote.toJSON()
     })
     .then(formattedNote => response.json(formattedNote))
-    .catch(err => next(error)) //pass to errorhandler
+    .catch(err => next(err)) //pass to errorhandler
 })
 
 app.use(unknownEndpoint)
