@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Person from './components/Person.js'
 import PersonForm from './components/PersonForm.js'
 import FilterForm from './components/FilterForm.js'
-import personService from "./services/persons"
+import personService from "./services/personService"
 import OpNote from './components/OpNote.js'
 
 /*
@@ -77,18 +77,20 @@ const App = () => {
             return person.name === newName ? returnedPerson : person //keep the old versions of people unless it's the one we just changed, so use the new version in local state
           })) //note the return in the above line. fails to compile without it
         })
-        .catch(error => { //handler for rare case that person is removed while attempting to update
-          setPersons(persons.filter(person => person.name !== newName)) //remove the local cached version of the person
-          setOpText(`Error: The person ${newName} has already been removed from the server, cannot change their number.`)
-          setTimeout(() => {
-            setOpText(null)
-          }, 5000)
+        .catch(error => { 
+          if(error.response.status === 400){ //handler for when the newly sent person is invalid according to db
+            setOpText(`${JSON.stringify(error.response.data)}`)
+            setTimeout(() => setOpText(null), 5000)
+          }
+          else{ //handler for rare case that person is removed while attempting to update
+            setPersons(persons.filter(person => person.name !== newName)) //remove the local cached version of the person
+            setOpText(`Error: The person ${newName} has already been removed from the server, cannot change their number.`)
+            setTimeout(() => setOpText(null), 5000)
+          }
         })
         //update the operation notification text for 5 sec for successful update number change
         setOpText(`${newName}'s number is now set to ${newNum}`)
-        setTimeout(() => {
-          setOpText(null)
-        }, 5000)
+        setTimeout(() => setOpText(null), 5000)
       }      
     }
     else{//send the new person object to the server
@@ -98,6 +100,12 @@ const App = () => {
         setPersons(persons.concat(returnedPerson)) //have to add the new person to our local state
         setNewName('')
         setNewNum('')
+      })
+      .catch(error => { //error msg in response to post from server
+        setOpText(`${JSON.stringify(error.response.data)}`)
+        setTimeout(() => {
+          setOpText(null)
+        }, 5000)
       })
       //update the operation notification text for 5 sec
       setOpText(`${newName} added to the phonebook!`)
