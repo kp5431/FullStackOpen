@@ -95,7 +95,7 @@ describe('Total Likes', () => {
       ]
     
       test('blog missing likes field', () => {
-        expect(() => listHelper.totalLikes(blogMissingLikesField)).toThrow('No likes field in blog')
+        expect(() => listHelper.totalLikes(blogMissingLikesField)).toThrow('blog missing likes property')
       })
 
       const blogLikesWrongType = [
@@ -198,7 +198,7 @@ describe('Max Likes', () => {
   ]
 
   test('blog missing likes field', () => {
-    expect(() => listHelper.favoriteBlog(blogMissingLikesField)).toThrow('No likes field in blog')
+    expect(() => listHelper.favoriteBlog(blogMissingLikesField)).toThrow('blog missing likes property')
   })
 
   const blogLikesWrongType = [
@@ -271,4 +271,72 @@ describe('Max Likes', () => {
     const result = listHelper.favoriteBlog(listWithManyBlogs0Likes)
     expect(result).toEqual(listWithManyBlogs0Likes[0])
   })
+})
+
+describe('Max Blogs', () => {
+  const listWithManyBlogsDiffAuthors = [
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: '1',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 0,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: '1',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 0,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: '2',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 0,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 0,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 0,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 0,
+      __v: 0
+    },
+  ]
+
+  test('test of 6 different blogs', () => {
+    const result = listHelper.mostBlogs(listWithManyBlogsDiffAuthors)
+    expect(result)
+      .toEqual(
+        {'author': 'Edsger W. Dijkstra',
+         'blogs': 3
+        }
+      )
+  })
+
+  test('test with empty blog list', () => {
+    expect(listHelper.mostBlogs([])).toEqual({"author": "", "blogs": 0})
+  })
+
 })
