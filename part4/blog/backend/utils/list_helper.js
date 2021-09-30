@@ -48,6 +48,7 @@ const dummy = (blogs) => 1
     //map author name to number of blogs
     const dict = {}
     blogs.forEach((blog) => {
+        errorHandler(blog)
         if(dict.hasOwnProperty(blog.author)){
             dict[blog.author] = dict[blog.author] + 1
         }
@@ -108,10 +109,47 @@ const dummy = (blogs) => 1
     }
  }
 
+ /**
+  * Returns the author who's blog posts have the most likes from
+  * a list of blogs. 
+  * return looks like: 
+  * {
+  *   author: 'testAuthor',
+  *   likes: 25 //this is the total likes from all blogs
+  * }
+  */
+ const mostLikes = (blogs) => {
+    
+    //need to map author to total sum of their blog likes
+    dict = {}
+    blogs.forEach((blog) => {
+        errorHandler(blog)
+        if(dict.hasOwnProperty(blog.author)){
+            dict[blog.author] = dict[blog.author] + blog.likes
+        }
+        else{
+            dict[blog.author] = blog.likes
+        }
+    })
+    let maxLikes = 0
+    let maxAuthor = ''
+    for(const author in dict){
+        if(dict[author] > maxLikes){
+            maxAuthor = author
+            maxLikes = dict[author]
+        }
+    }
+    return {
+              'author': maxAuthor,
+              'likes': maxLikes
+           }
+ }
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }
 

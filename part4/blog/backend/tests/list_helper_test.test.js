@@ -340,3 +340,70 @@ describe('Max Blogs', () => {
   })
 
 })
+
+describe('Max Likes Per Author', () => {
+  const listWithManyBlogs = [
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: '1',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 1,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: '1',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 2,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: '2',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 2,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 1,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 2,
+      __v: 0
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 3,
+      __v: 0
+    },
+  ]
+
+  test('test of 6 different blogs', () => {
+    const result = listHelper.mostLikes(listWithManyBlogs)
+    expect(result)
+      .toEqual(
+        {'author': 'Edsger W. Dijkstra',
+         'likes': 6
+        }
+      )
+  })
+
+  test('test with empty blog list', () => {
+    expect(listHelper.mostLikes([])).toEqual({"author": "", "likes": 0})
+  })
+})
