@@ -25,4 +25,10 @@ test('all blogs are returned', async () => {
   expect(response).toHaveLength(helper.initialBlogs.length)
 })
 
+test('ensure id field is present, not _id', async () => {
+  const response = await helper.blogsInDb()
+  response.forEach((blog) => {
+    expect(blog.id).toBeDefined()
+  })
+})
 

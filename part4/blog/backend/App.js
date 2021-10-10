@@ -9,6 +9,7 @@ const config = require('./utils/config')
 
 //web application framework
 const express = require('express')
+require('express-async-errors') //don't have to wrap awaits in try catch blocks in route handler
 const app = express()
 
 // ?? :(
