@@ -32,3 +32,22 @@ test('ensure id field is present, not _id', async () => {
   })
 })
 
+test('a valid blog can be added ', async () => {
+  const newBlog = {
+    title: 'blog 3',
+    author: 'a3',
+    url: 'u3',
+    likes: 3
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+  
+})
+
+
