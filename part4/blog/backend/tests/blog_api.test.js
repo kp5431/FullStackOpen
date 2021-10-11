@@ -47,7 +47,27 @@ test('a valid blog can be added ', async () => {
 
   const blogsAtEnd = await helper.blogsInDb()
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
-  
 })
 
+test('like property defaults to 0 if likes field missing from post', async () => {
+  const newBlog = {
+    title: 'blog 3',
+    author: 'a3',
+    url: 'u3'
+    //missing likes field
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
 
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+  const dbNewBlog = blogsAtEnd[2]
+  expect(dbNewBlog.likes).toBe(0)
+})
+
+afterAll(() => {
+  mongoose.connection.close()
+})
