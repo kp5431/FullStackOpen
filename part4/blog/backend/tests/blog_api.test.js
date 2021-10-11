@@ -105,8 +105,49 @@ test('POST blog missing title or url property', async () => {
 
   const blogs = await helper.blogsInDb()
   expect(blogs).toHaveLength(helper.initialBlogs.length)
+})
 
+test('delete blog', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
 
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(
+    helper.initialBlogs.length - 1
+  )
+
+  const titles = blogsAtEnd.map(b => b.title)
+
+  expect(titles).not.toContain(blogToDelete.title)
+})
+
+test('update a blog', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  let blogToUpdate = blogsAtStart[0]
+  blogToUpdate.title = 'new Title'
+  blogToUpdate.likes = 75
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(blogToUpdate)
+    .expect(200)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(
+    helper.initialBlogs.length
+  )
+
+  const titles = blogsAtEnd.map(b => b.title)
+  const likes = blogsAtEnd.map(b => b.likes)
+
+  expect(titles).toContain(blogToUpdate.title)
+  expect(likes).toContain(blogToUpdate.likes)
 })
 
 afterAll(() => {
