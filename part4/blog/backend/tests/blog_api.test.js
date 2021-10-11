@@ -68,6 +68,47 @@ test('like property defaults to 0 if likes field missing from post', async () =>
   expect(dbNewBlog.likes).toBe(0)
 })
 
+test('POST blog missing title or url property', async () => {
+  const noTitle = {
+    //missing title
+    author: 'a3',
+    url: 'u3',
+    likes: 3  
+  }
+
+  const noUrl = {
+    title: 'blog 3',
+    author: 'a3',
+    //missing url
+    likes: 3 
+  }
+
+  const noBoth = {
+    //missing title
+    author: 'a3',
+    //missing url
+    likes: 3
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(noTitle)
+    .expect(400)
+  await api
+    .post('/api/blogs')
+    .send(noUrl)
+    .expect(400)
+  await api
+    .post('/api/blogs')
+    .send(noBoth)
+    .expect(400)
+
+  const blogs = await helper.blogsInDb()
+  expect(blogs).toHaveLength(helper.initialBlogs.length)
+
+
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
