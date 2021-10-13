@@ -24,6 +24,25 @@
 usersRouter.post('/', async (request, response) => {
   const body = request.body
 
+  //ensure user has username and password properties
+  if(!body.hasOwnProperty('username') ||
+       !body.hasOwnProperty('password')){
+        //return so execution in route does not continue
+        return response.status(400).send( //status().send() sends the status code back to client
+          { 
+            error: 'user from HTTP POST missing username and/or password property'
+          })
+  }
+  
+  //ensure username and pw are both at least 3 chars
+  if(body.username.length < 3 || body.password.length < 3){
+    return response.status(400).send( //status().send() sends the status code back to client
+      { 
+        error: 'username and password properties must be at least 3 characters'
+      })
+  }
+  
+  //valid user submitted
   const saltRounds = 10 //create a hash of the pw submitted
   const passwordHash = await bcrypt.hash(body.password, saltRounds)
 

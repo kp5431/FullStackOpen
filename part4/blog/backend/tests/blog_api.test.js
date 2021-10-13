@@ -59,7 +59,7 @@ test('like property defaults to 0 if likes field missing from post', async () =>
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.blogsInDb()
