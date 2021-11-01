@@ -19,6 +19,8 @@ const cors = require('cors')
 const blogRouter = require('./controllers/blogs')
 //set of routes to do with users
 const userRouter = require('./controllers/users')
+//set of routes to do with login
+const loginRouter = require('./controllers/login')
 
 //set of custom middleware functions
 const middleware = require('./utils/middleware')
@@ -42,6 +44,7 @@ app.use(express.json()) // ??
 app.use(middleware.requestLogger)
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 

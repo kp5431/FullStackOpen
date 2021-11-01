@@ -15,6 +15,61 @@ beforeEach(async () => {
   await User.deleteMany({})
 })
 
+
+test('Add a new user to the db and then try to login as them', async () => {
+  const usersAtStart = await helper.usersInDb()
+
+  const newUser = {
+    username: 'loginUser',
+    name: 'Login User',
+    password: 'password',
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const jsonResponse = await api
+    .get('/api/users')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  expect(jsonResponse.body).toHaveLength(usersAtStart.length + 1)
+  const usernames = jsonResponse.body.map(userObj => userObj.username)
+  expect(usernames).toContain(newUser.username)
+
+  //attempt login
+  const loginJson = {
+    username: 'loginUser',
+    password: 'password'
+  }
+
+  const loginResp = await api
+    .post('/api/login')
+    .send(loginJson)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  
+  expect(loginResp.body.token).toBeTruthy() //ensure token string returned is valid
+
+  //ensure login attempt with incorrect password fails
+  const badLoginJson = {
+    username: 'loginUser',
+    password: 'badPassword'
+  }
+
+  const badLoginResp = await api
+    .post('/api/login')
+    .send(badLoginJson)
+    .expect(401)
+    .expect('Content-Type', /application\/json/)
+
+  expect(badLoginResp.body.error).toBe('invalid username or password')  
+})
+
+
 test('Add a new user to the db', async () => {
   const usersAtStart = await helper.usersInDb()
 
