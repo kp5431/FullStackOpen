@@ -4,10 +4,15 @@
 ***/
 
 const blogRouter = require('express').Router()
+const blog = require('../models/blog')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({})
+    const blogs = await Blog
+      .find({})
+      //populate the user field of each blog with content from the attached user
+      .populate('user', {username: 1, name: 1, id: 1})
     response.json(blogs.map(blog => blog.toJSON()))
   })
   
@@ -17,16 +22,24 @@ blogRouter.post('/', async (request, response) => {
     }
     if(!request.body.hasOwnProperty('title') ||
        !request.body.hasOwnProperty('url')){
-        response.status(400).send( //status().send() sends the status code back to client
-          { 
+        return response.status(400).send( //status().send() sends the status code back to client
+          { //return so execution stops
             error: 'blog from HTTP POST missing title and/or url property' 
           })
     }
-    else{
-      const blog = new Blog(request.body)
-      const result = await blog.save()
-      response.status(201).json(result)
-    }
+    const userToAttach = await User.findOne({}) //random user from db
+    const blogDoc = new Blog({
+      title: request.body.title,
+      author: userToAttach.name,
+      user: userToAttach._id.toString(), //attach the id of the random user
+      url: request.body.url,
+      likes: request.body.likes
+    })
+    
+    //save new blog to db
+    const result = await blogDoc.save()
+    response.status(201).json(result)
+  
 })
 
 blogRouter.delete('/:id', async (request, response) => {

@@ -5,6 +5,8 @@ const helper = require('./test_helper')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
 //return test db to initial conditions before running any tests
 beforeEach(async () => {
   await Blog.deleteMany({}) //delete all docs
@@ -59,7 +61,7 @@ test('like property defaults to 0 if likes field missing from post', async () =>
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(200)
+    .expect(201)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.blogsInDb()
@@ -149,6 +151,70 @@ test('update a blog', async () => {
   expect(titles).toContain(blogToUpdate.title)
   expect(likes).toContain(blogToUpdate.likes)
 })
+
+test('blogs added have a randomly assigned user', async () => {
+
+  await User.deleteMany({}) //delete all users
+  await Blog.deleteMany({}) //delete all blogs
+
+  const newUser = { //the user the api assigns blogs to
+    username: 'user',
+    name: 'Gets assigned to blogs',
+    password: 'password',
+  }
+
+  const newBlog = {
+    title: 'blog rando',
+    author: 'a3',
+    url: 'testUrl',
+    likes: 25
+  }
+
+  //send new user to db
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  //send new blog to db
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  //ensure only the newUser user exists in the db
+  const userResponse = await api
+    .get('/api/users')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  
+  expect(userResponse.body).toHaveLength(1)
+  const usernames = userResponse.body.map(userObj => userObj.username)
+  expect(usernames[0]).toBe(newUser.username)
+
+  //expect the api to populate newBlog's user field with data from newUser
+  const blogResponse = await api
+    .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  expect(blogResponse.body).toHaveLength(1) //only 1 blog expected to exist
+  const blogs = blogResponse.body //array of blogs
+  expect(blogs[0].author).toBe(newUser.name) //expect blog's author to be the same as newUser's name
+  const attachedUser = blogs[0].user //get all of the user data attached to the blog by the api
+  expect(attachedUser.username).toBe(newUser.username) //ensure attachedUser's fields are the same as newUser's fields.
+  expect(attachedUser.name).toBe(newUser.name)
+  expect(attachedUser.id).toBe(userResponse.body[0].id)
+  
+  //uncomment to print the blog
+  //blogResponse.body.forEach(blog => console.log(blog))
+
+
+})
+
+
 
 afterAll(() => {
   mongoose.connection.close()

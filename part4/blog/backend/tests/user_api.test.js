@@ -27,7 +27,7 @@ test('Add a new user to the db', async () => {
   await api
     .post('/api/users')
     .send(newUser)
-    .expect(200)
+    .expect(201)
     .expect('Content-Type', /application\/json/)
 
   const jsonResponse = await api
@@ -48,7 +48,7 @@ test('Add 3 users, get from db, then print', async () => {
     await api
       .post('/api/users')
       .send(user)
-      .expect(200)
+      .expect(201)
       .expect('Content-Type', /application\/json/)
   }
 
@@ -118,7 +118,7 @@ test('Invalid users are not submitted to db', async () => {
   await api
     .post('/api/users')
     .send(validUser)
-    .expect(200)
+    .expect(201)
     .expect('Content-Type', /application\/json/)
 
   //submit invalid users, expecting each to fail
