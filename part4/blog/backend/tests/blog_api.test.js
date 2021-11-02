@@ -65,7 +65,6 @@ test('ensure id field is present, not _id', async () => {
 
 test('a valid blog can be added ', async () => {
   
-
   const newBlog = {
     title: 'First Blog Added',
     author: helper.firstLoggedIn.name,
@@ -142,22 +141,34 @@ test('POST blog missing title or url property', async () => {
 })
 
 test('delete blog', async () => {
-  const blogsAtStart = await helper.blogsInDb()
-  const blogToDelete = blogsAtStart[0]
+  //first, add a blog
+  const newBlog = {
+    title: 'First Blog Added',
+    author: helper.firstLoggedIn.name,
+    url: 'testUrl',
+    likes: 25
+  }
+  await api
+    .post('/api/blogs')
+    .set('Authorization', 'bearer ' + userToken)
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  let blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(1)
+
+  //now delete the same blog
+  const blogToDelete = blogsAtEnd[0]
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', 'bearer ' + userToken)
     .expect(204)
 
-  const blogsAtEnd = await helper.blogsInDb()
+  blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(0)
 
-  expect(blogsAtEnd).toHaveLength(
-    helper.initialBlogs.length - 1
-  )
-
-  const titles = blogsAtEnd.map(b => b.title)
-
-  expect(titles).not.toContain(blogToDelete.title)
 })
 
 test('update a blog', async () => {
