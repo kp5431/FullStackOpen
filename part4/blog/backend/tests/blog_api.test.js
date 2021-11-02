@@ -1,4 +1,5 @@
 const mongoose = require('mongoose') 
+const jwt = require('jsonwebtoken') //handle jwts
 const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
@@ -7,12 +8,40 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+let userToken = null
+
 //return test db to initial conditions before running any tests
 beforeEach(async () => {
   await Blog.deleteMany({}) //delete all docs
-  const blogObjects = helper.initialBlogs.map(blog => new Blog(blog)) //array of Blog objs
-  const promiseArray = blogObjects.map(blogObj => blogObj.save()) //array of promises
-  await Promise.all(promiseArray) //wait until all promises have completed
+  await User.deleteMany({}) //delete all users
+  //const blogObjects = helper.initialBlogs.map(blog => new Blog(blog)) //array of Blog objs
+  //const promiseArray = blogObjects.map(blogObj => blogObj.save()) //array of promises
+  //await Promise.all(promiseArray) //wait until all promises have completed
+
+  //create a new user
+  await api
+    .post('/api/users')
+    .send(helper.firstLoggedIn)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  
+  //sign the newUser in
+  const loginJson = {
+    username: helper.firstLoggedIn.username,
+    password: helper.firstLoggedIn.password
+  }
+
+  const loginResp = await api
+    .post('/api/login')
+    .send(loginJson)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  
+  expect(loginResp.body.token).toBeTruthy() //ensure token string returned is valid
+  userToken = loginResp.body.token
+  decodedToken = jwt.verify(userToken, process.env.SECRET)
+  expect(decodedToken.id).toBeTruthy()
+
 })
 
 test('blogs are returned as json', async () => {
@@ -24,7 +53,7 @@ test('blogs are returned as json', async () => {
 
 test('all blogs are returned', async () => {
   const response = await helper.blogsInDb()
-  expect(response).toHaveLength(helper.initialBlogs.length)
+  expect(response).toHaveLength()
 })
 
 test('ensure id field is present, not _id', async () => {
@@ -35,20 +64,23 @@ test('ensure id field is present, not _id', async () => {
 })
 
 test('a valid blog can be added ', async () => {
+  
+
   const newBlog = {
-    title: 'blog 3',
-    author: 'a3',
-    url: 'u3',
-    likes: 3
+    title: 'First Blog Added',
+    author: helper.firstLoggedIn.name,
+    url: 'testUrl',
+    likes: 25
   }
   await api
     .post('/api/blogs')
+    .set('Authorization', 'bearer ' + userToken)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.blogsInDb()
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+  expect(blogsAtEnd).toHaveLength(1)
 })
 
 test('like property defaults to 0 if likes field missing from post', async () => {

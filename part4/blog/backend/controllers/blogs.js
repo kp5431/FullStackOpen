@@ -1,12 +1,21 @@
 /***
  * This file sets up all the routes for /api/blogs
- * Handles CRUD operations on the db 
+ * Handles CRUD operations on the blog db 
 ***/
 
 const blogRouter = require('express').Router()
-const blog = require('../models/blog')
+const jwt = require('jsonwebtoken') //handle jwts
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization')
+  if(authorization && authorization.toLowerCase().startsWith('bearer ')){
+    return authorization.substring(7)
+  }
+  return null
+}
+
 
 blogRouter.get('/', async (request, response) => {
     const blogs = await Blog
@@ -27,7 +36,13 @@ blogRouter.post('/', async (request, response) => {
             error: 'blog from HTTP POST missing title and/or url property' 
           })
     }
-    const userToAttach = await User.findOne({}) //random user from db
+    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if(!token || !decodedToken.id){
+      return response.status(401).json({error: 'token missing or invalid'})
+    }
+
+    const userToAttach = await User.findById(decodedToken.id) //match the submitted token with db user id
     const blogDoc = new Blog({
       title: request.body.title,
       author: userToAttach.name,
@@ -39,6 +54,7 @@ blogRouter.post('/', async (request, response) => {
     //save new blog to db
     const result = await blogDoc.save()
     response.status(201).json(result)
+
   
 })
 
