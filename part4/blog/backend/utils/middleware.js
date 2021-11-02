@@ -12,6 +12,7 @@ const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
   logger.info('Path:  ', request.path)
   logger.info('Body:  ', request.body)
+  logger.info('Token:', request.token)
   logger.info('---')
   next()
 }
@@ -39,8 +40,24 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
+/**
+ * This function extracts the token from the request's authorization header
+ * and makes it accessible by calling request.token in future handlers
+ */
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if(authorization && authorization.toLowerCase().startsWith('bearer ')){
+    request.token = authorization.substring(7)
+  }
+  else{
+    request.token = null
+  }
+  next()
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 }
